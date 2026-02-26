@@ -1,5 +1,1 @@
-# Only ignore node_modules (too large for git)
-node_modules/
-
-# macOS system files
-.DS_Store
+# No exclusions - everything is tracked
