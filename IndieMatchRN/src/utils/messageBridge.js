@@ -5,10 +5,10 @@
 
 /** Messages we SEND to playables (RN → WebView) */
 export const MSG = {
-    /** Send mute state to a playable. Matches the web's postMessage({ type: 'mute', value: bool }) */
-    MUTE: (muted) => `window.postMessage(${JSON.stringify({ type: 'mute', value: muted })}, '*'); true;`,
-    PAUSE: () => `window.postMessage(${JSON.stringify({ type: 'pause' })}, '*'); true;`,
-    RESUME: () => `window.postMessage(${JSON.stringify({ type: 'resume' })}, '*'); true;`,
+  /** Send mute state to a playable. Matches the web's postMessage({ type: 'mute', value: bool }) */
+  MUTE: (muted) => `window.postMessage(${JSON.stringify({ type: 'mute', value: muted })}, '*'); true;`,
+  PAUSE: () => `window.postMessage(${JSON.stringify({ type: 'pause' })}, '*'); true;`,
+  RESUME: () => `window.postMessage(${JSON.stringify({ type: 'resume' })}, '*'); true;`,
 };
 
 /**
@@ -53,9 +53,9 @@ true; // required by react-native-webview
  * Returns an object or null.
  */
 export function parseWebViewMessage(rawData) {
-    try {
-        return JSON.parse(rawData);
-    } catch (e) {
-        return null;
-    }
+  try {
+    return JSON.parse(rawData);
+  } catch (e) {
+    return null;
+  }
 }

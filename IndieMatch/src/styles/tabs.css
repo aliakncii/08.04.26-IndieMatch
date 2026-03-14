@@ -1,0 +1,126 @@
+/* src/styles/tabs.css */
+/* Bottom tab bar ve placeholder ekranlar */
+
+#bottom-tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #111;
+    border-top: 1px solid #222;
+    display: flex;
+    align-items: stretch;
+    z-index: 900;
+    box-sizing: border-box;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    padding-bottom: 4px;
+}
+
+.tab-item .tab-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+}
+
+.tab-item .tab-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.tab-item .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    line-height: 1;
+}
+
+.tab-item.active {
+    color: #ffffff;
+}
+
+.tab-item[data-screen="screen-indie"].active {
+    color: #fe2c55;
+}
+
+.tab-item:active .tab-icon {
+    transform: scale(0.85);
+}
+
+/* Placeholder screens */
+.placeholder-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 32px;
+    box-sizing: border-box;
+    text-align: center;
+    background: linear-gradient(160deg, #0a0a0a 0%, #111 100%);
+}
+
+.placeholder-icon {
+    font-size: 64px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 4px 16px rgba(254, 44, 85, 0.3));
+    animation: floatBob 3s ease-in-out infinite;
+}
+
+@keyframes floatBob {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.placeholder-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.placeholder-sub {
+    font-size: 15px;
+    color: #666;
+    margin: 4px 0 0 0;
+    line-height: 1.4;
+}
+
+.placeholder-badge {
+    margin-top: 16px;
+    background: rgba(254, 44, 85, 0.15);
+    border: 1px solid rgba(254, 44, 85, 0.4);
+    color: #fe2c55;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 20px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}

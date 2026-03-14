@@ -9,7 +9,7 @@
 //  4) Safety-net: forces mraid._markReady() if game hasn't started within 3s
 
 import React, { forwardRef, useEffect, useRef } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MSG, BRIDGE_INJECTION, parseWebViewMessage } from '../utils/messageBridge';
 
@@ -32,8 +32,28 @@ const PRE_CONTENT_SHIM = `
   window.st_network_rewriting = { enabled: false };
   // Stub the function itself
   window.stBootstrapNetworkRewriting = function() {};
-  // Stub st_showNavigationBanner which mraid.open() calls
+  // st_showNavigationBanner is called WITHOUT the URL, so stub it out
   window.st_showNavigationBanner = function() {};
+
+  // Override mraid.open ASAP — this is where the URL actually lives
+  // mraid object may not exist yet, so we intercept after DOM is ready
+  // and also patch it immediately in case mraid.jsa is already parsed
+  function _patchMraidOpen() {
+    if (window.mraid && window.mraid.open) {
+      var _origOpen = window.mraid.open;
+      window.mraid.open = function(url) {
+        try {
+          if (url && window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: '__open_url', url: String(url) }));
+          }
+        } catch(e) {}
+        // Don't call _origOpen — that would trigger st_showNavigationBanner
+      };
+    }
+  }
+  _patchMraidOpen();
+  document.addEventListener('DOMContentLoaded', _patchMraidOpen);
+  window.addEventListener('load', _patchMraidOpen);
 
   // ── 2) Bridge stub for Luna engine ──
   if (!window.Bridge) {
@@ -140,10 +160,14 @@ const PlayableCard = forwardRef(function PlayableCard(
     const parsed = parseWebViewMessage(event.nativeEvent.data);
     if (parsed) {
       // Log debug messages from the WebView
-      if (parsed.type === '__webview_error') {
-        console.warn('[PlayableCard] JS Error in WebView:', parsed.message, parsed.filename, 'L' + parsed.lineno);
+      if (parsed.type === '__open_url' && parsed.url) {
+        Linking.openURL(parsed.url).catch(err =>
+          console.warn('[PlayableCard] Linking.openURL failed:', err)
+        );
+      } else if (parsed.type === '__webview_error') {
+        console.log('[PlayableCard] JS Error in WebView:', parsed.message, parsed.filename, 'L' + parsed.lineno);
       } else if (parsed.type === '__resource_error') {
-        console.warn('[PlayableCard] Resource load failed:', parsed.tagName, parsed.src);
+        console.log('[PlayableCard] Resource load failed:', parsed.tagName, parsed.src);
       }
       if (onMessage) {
         onMessage(parsed);
@@ -161,6 +185,21 @@ const PlayableCard = forwardRef(function PlayableCard(
     console.warn('[PlayableCard] HTTP error:', nativeEvent.statusCode, nativeEvent.url);
   };
 
+  // Catch direct WebView navigation to App Store / market URLs
+  const handleShouldStartLoad = ({ url }) => {
+    if (
+      url.startsWith('https://apps.apple.com') ||
+      url.startsWith('itms-apps://') ||
+      url.startsWith('market://')
+    ) {
+      Linking.openURL(url).catch(err =>
+        console.warn('[PlayableCard] Linking.openURL (nav) failed:', err)
+      );
+      return false; // block WebView from navigating
+    }
+    return true;
+  };
+
   return (
     <View style={styles.container}>
       <WebView
@@ -172,6 +211,7 @@ const PlayableCard = forwardRef(function PlayableCard(
         onMessage={handleMessage}
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
+        onShouldStartLoadWithRequest={handleShouldStartLoad}
         onError={handleError}
         onHttpError={handleHttpError}
         allowsInlineMediaPlayback
