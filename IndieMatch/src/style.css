@@ -83,6 +83,7 @@ body {
 #feed-container {
   width: 100%;
   height: 100%;
+  /* Screen already accounts for the 60px tab bar */
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -101,20 +102,34 @@ body {
   position: relative;
   background: #000;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   overflow: hidden;
 }
 
-/* Letterboxing: iframe fills container but object-fit isn't real for iframes. */
-/* We enforce 100% size, but the wrapper flex-centers it. */
-/* The iframe content itself should handle responsiveness, but we provide the full frame. */
 .playable-iframe {
+  flex: 1 1 auto;
   width: 100%;
-  height: 100%;
   border: none;
   display: block;
   background: #000;
+}
+
+/* Engagement bar — likes, comments, share etc. */
+.engagement-bar {
+  flex: 0 0 7%;
+  background: #111;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Creator info — avatar, name, description etc. */
+.creator-info {
+  flex: 0 0 9%;
+  background: #0a0a0a;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 /* Edge Zones */
@@ -140,30 +155,30 @@ body {
   right: 0;
 }
 
-/* UI Overlay */
-#ui-overlay {
+/* ═══════════════════════════════════════════════════ */
+/* FEED TOP BAR (floating sound + tabs)               */
+/* ═══════════════════════════════════════════════════ */
+
+#feed-top-bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  /* Let clicks pass through center */
   z-index: 600;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
-#ui-overlay>* {
+#feed-top-bar>* {
   pointer-events: auto;
-  /* Re-enable pointer events for direct children (header, actions, bottom) */
 }
 
 /* Top Header */
 .top-header {
-  width: 100%;
-  padding-top: 50px;
+  flex: 1;
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
@@ -180,79 +195,6 @@ body {
   color: white;
   border-bottom: 2px solid white;
   padding-bottom: 2px;
-}
-
-/* Right Actions */
-.right-actions {
-  position: absolute;
-  right: 8px;
-  bottom: 100px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.icon-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid white;
-  background: #555;
-}
-
-.icon {
-  font-size: 32px;
-  color: white;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-}
-
-.count {
-  font-size: 12px;
-  color: white;
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-/* Bottom Info */
-.bottom-info {
-  padding: 16px;
-  padding-bottom: 40px;
-  color: white;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
-}
-
-.username {
-  font-weight: 700;
-  font-size: 17px;
-  margin-bottom: 6px;
-  text-shadow: 0 1px 1px black;
-}
-
-.description {
-  font-size: 15px;
-  line-height: 1.3;
-  margin-bottom: 10px;
-  text-shadow: 0 1px 1px black;
-}
-
-.tag {
-  font-weight: 700;
-}
-
-.music-note {
-  font-size: 14px;
-  opacity: 0.9;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 /* Toast */
@@ -343,10 +285,7 @@ body {
 
 /* Sound Control */
 .sound-control {
-  position: absolute;
-  top: 55px;
-  right: 20px;
-  z-index: 700;
+  flex-shrink: 0;
   width: 36px;
   height: 36px;
   background: rgba(0, 0, 0, 0.5);
@@ -357,6 +296,7 @@ body {
   cursor: pointer;
   backdrop-filter: blur(4px);
   transition: transform 0.2s;
+  z-index: 700;
 }
 
 .sound-control:active {
@@ -368,45 +308,41 @@ body {
   color: white;
 }
 
-/* Improved Typography & Gradients */
-.bottom-info {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
-  padding-bottom: 80px;
-  /* Increased padding for bottom nav */
-}
-
-.username {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.description {
-  font-size: 15px;
-  opacity: 0.9;
-}
 
 
-
-/* Profile View */
-#profile-view {
+/* Screen System */
+.screen {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 60px);
+  /* Exclude tab bar */
+  display: none;
   background: #000;
-  z-index: 800;
-  overflow-y: auto;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   color: white;
-  /* padding-bottom removed as bottom nav is gone */
   box-sizing: border-box;
-  overscroll-behavior: none;
-  /* Critical for handling horizontal swipes manually */
+  overflow: hidden;
 }
 
-.hidden-right {
-  transform: translateX(100%);
+.screen.active {
+  display: block;
+}
+
+/* Profile View (inside screen-profil) */
+#profile-view {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow-y: auto;
+  color: white;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+}
+
+/* screen-indie needs overflow visible for iframes */
+#screen-indie {
+  overflow: visible;
 }
 
 .profile-header {
@@ -628,19 +564,339 @@ body {
   opacity: 0.7;
 }
 
-/* Heart icon in like button */
-.heart-icon {
-  transition: color 0.3s ease;
+/* ═══════════════════════════════════════════════════ */
+/* ENGAGEMENT BAR                                     */
+/* ═══════════════════════════════════════════════════ */
+
+.engagement-bar {
+  padding: 0 14px;
+  justify-content: space-between;
 }
 
-/* Repost Icon */
-.repost-icon {
-  font-size: 28px !important;
-  /* Slightly smaller than heart usually */
-  transition: color 0.3s ease;
+.eng-left {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
-.repost-active {
-  color: #00e676 !important;
-  /* Green color for repost */
+.eng-right {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.eng-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.eng-btn:active {
+  opacity: 0.7;
+}
+
+.eng-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.eng-count {
+  font-size: 11px;
+  color: #ccc;
+}
+
+.eng-btn[data-action="like"].liked .eng-icon {
+  color: #fe2c55;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* CREATOR INFO BAR                                   */
+/* ═══════════════════════════════════════════════════ */
+
+.creator-info {
+  padding: 0 14px;
+  justify-content: space-between;
+  border-top: 1px solid #1a1a1a;
+}
+
+.engagement-bar, .creator-info {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.creator-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.creator-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #333;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.creator-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.creator-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.creator-desc {
+  color: #aaa;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.creator-right {
+  display: flex;
+  align-items: center;
+}
+
+.repost-btn {
+  background: none;
+  border: none;
+  color: #4CAF50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  font-size: 11px;
+  gap: 2px;
+  padding: 0;
+}
+
+.repost-btn:active {
+  opacity: 0.7;
+}
+
+.repost-count {
+  color: #4CAF50;
+  font-size: 11px;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* BOTTOM TAB BAR                                     */
+/* ═══════════════════════════════════════════════════ */
+
+#bottom-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: #111;
+  border-top: 1px solid #222;
+  display: flex;
+  align-items: stretch;
+  z-index: 900;
+  box-sizing: border-box;
+  /* Safe area support for iPhone notch/home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  padding-bottom: 4px;
+}
+
+.tab-item .tab-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.tab-item .tab-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tab-item .tab-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* Active tab state */
+.tab-item.active {
+  color: #ffffff;
+}
+
+/* Indie tab active: accent color */
+.tab-item[data-screen="screen-indie"].active {
+  color: #fe2c55;
+}
+
+/* Tap press effect */
+.tab-item:active .tab-icon {
+  transform: scale(0.85);
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* PLACEHOLDER SCREENS                                */
+/* ═══════════════════════════════════════════════════ */
+
+.placeholder-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 32px;
+  box-sizing: border-box;
+  text-align: center;
+  background: linear-gradient(160deg, #0a0a0a 0%, #111 100%);
+}
+
+.placeholder-icon {
+  font-size: 64px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 16px rgba(254, 44, 85, 0.3));
+  animation: floatBob 3s ease-in-out infinite;
+}
+
+@keyframes floatBob {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.placeholder-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.placeholder-sub {
+  font-size: 15px;
+  color: #666;
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+.placeholder-badge {
+  margin-top: 16px;
+  background: rgba(254, 44, 85, 0.15);
+  border: 1px solid rgba(254, 44, 85, 0.4);
+  color: #fe2c55;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 20px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Profile screen needs full-height scroll */
+#screen-profil {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ═══════════════════════════════════════════════════ */
+/* ONBOARDING OVERLAY                                 */
+/* ═══════════════════════════════════════════════════ */
+
+#onboarding-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: all;
+  background: transparent;
+}
+
+/* Dark blurred mask over the game/content area */
+#onboarding-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 175px; /* clears engagement-bar + creator-info + tab-bar */
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+#onboarding-content {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  height: 16%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+#onboarding-highlight {
+  position: absolute;
+  inset: 0;
+  border: 2px solid cyan;
+  border-radius: 12px;
+  background: rgba(0, 255, 255, 0.05);
+  box-shadow: 0 0 0 3000px rgba(0, 0, 0, 0.0); /* ensure no extra darkening */
+}
+
+#onboarding-hand {
+  font-size: 32px;
+  animation: handBounce 1s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+#onboarding-text {
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+@keyframes handBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }

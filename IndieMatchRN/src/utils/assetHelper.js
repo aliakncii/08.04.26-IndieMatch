@@ -10,7 +10,7 @@
 // raw assets (not source to be transpiled). The Metro middleware handles
 // .js → .jsa fallback automatically.
 
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
@@ -38,21 +38,69 @@ const SENTINEL = BASE_DIR + '_ready_v6'; // v6: force re-copy with verification
 /**
  * Returns the Metro dev server base URL (e.g. "http://192.168.1.5:8081")
  * or null if not in dev mode / not available.
+ *
+ * Strategy 0 (best): react-native/Libraries/Core/Devtools/getDevServer
+ *   Returns { url: "http://192.168.x.x:8081/" } directly. Works in both
+ *   old and new architecture (Hermes + JSC), across all Expo SDK versions.
+ *
+ * Strategy 1: NativeModules.SourceCode.scriptURL
+ *   Parses the URL from which the JS bundle was fetched. Works on old arch.
+ *
+ * Strategy 2: Expo Constants API (multiple SDK shapes as fallback).
  */
 function getDevServerBaseUrl() {
     if (!__DEV__) return null;
+
+    // ── Strategy 0: RN internal getDevServer (works on old + new arch) ────────
     try {
-        const host =
-            Constants.expoGoConfig?.debuggerHost ||
-            Constants.manifest?.debuggerHost ||
-            Constants.manifest?.hostUri;
-        if (host) {
-            // host is like "192.168.1.5:8081"
-            return `http://${host}`;
+        // eslint-disable-next-line import/no-extraneous-dependencies
+        const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer');
+        const fn = getDevServer?.default ?? getDevServer;
+        if (typeof fn === 'function') {
+            const result = fn();
+            if (result?.url) {
+                const url = String(result.url).replace(/\/+$/, ''); // strip trailing slash
+                console.log('[AssetHelper] Dev server (getDevServer):', url);
+                return url;
+            }
         }
     } catch (e) {
-        console.warn('[AssetHelper] Could not get dev server URL:', e.message);
+        // Module not available in all RN versions — fall through
     }
+
+    // ── Strategy 1: SourceCode native module (old arch) ───────────────────────
+    try {
+        const scriptURL = NativeModules.SourceCode?.scriptURL;
+        if (scriptURL) {
+            const match = String(scriptURL).match(/^(https?:\/\/[^/]+)/);
+            if (match) {
+                console.log('[AssetHelper] Dev server (scriptURL):', match[1]);
+                return match[1];
+            }
+        }
+    } catch (e) {
+        console.warn('[AssetHelper] scriptURL strategy failed:', e.message);
+    }
+
+    // ── Strategy 2: Expo Constants (fallback for various SDK versions) ────────
+    try {
+        const host =
+            Constants.expoConfig?.hostUri ||
+            Constants.expoGoConfig?.debuggerHost ||
+            Constants.manifest2?.extra?.expoGo?.debuggerHost ||
+            Constants.manifest?.debuggerHost ||
+            Constants.manifest?.hostUri;
+
+        if (host) {
+            const cleanHost = String(host).split('/')[0].split('?')[0];
+            console.log('[AssetHelper] Dev server (Constants):', cleanHost);
+            return `http://${cleanHost}`;
+        }
+    } catch (e) {
+        console.warn('[AssetHelper] Constants strategy failed:', e.message);
+    }
+
+    console.warn('[AssetHelper] Dev server URL not found — playables may not load in dev mode.');
     return null;
 }
 

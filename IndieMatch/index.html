@@ -19,126 +19,198 @@
         <div id="phone-frame">
             <div id="app">
 
-                <!-- Feed Container -->
-                <div id="feed-container">
-                    <!-- Playables will be injected here -->
+                <div id="onboarding-overlay">
+                  <div id="onboarding-mask"></div>
+                  <div id="onboarding-content">
+                    <div id="onboarding-highlight"></div>
+                    <div id="onboarding-hand">👆</div>
+                    <p id="onboarding-text">
+                      Swipe up <span style="color:cyan">only</span> in this area
+                    </p>
+                  </div>
                 </div>
 
-                <!-- Interaction Layers -->
-                <div id="edge-zone-left" class="edge-zone"></div>
-                <div id="edge-zone-right" class="edge-zone"></div>
+                <!-- ═══════════════════════════════════════ -->
+                <!--  SCREEN: Indie (Ana Feed)               -->
+                <!-- ═══════════════════════════════════════ -->
+                <div id="screen-indie" class="screen active">
 
-                <!-- UI Overlay (Static for now, could be dynamic per item if needed) -->
-                <!-- Profile View (Initially Hidden) -->
-                <div id="profile-view" class="hidden-right">
-                    <div class="profile-header">
-                        <div class="nav-bar">
-                            <span class="back-btn" id="profile-back">‹</span>
-                            <span class="title">Profile</span>
-                            <span class="settings-icon">≡</span>
+                    <!-- Top floating controls (sound + feed tabs) -->
+                    <div id="feed-top-bar">
+                        <div id="sound-control" class="sound-control">
+                            <span class="sound-icon">🔇</span>
                         </div>
-                        <div class="profile-info">
-                            <div class="profile-avatar">
-                                <img src="https://ui-avatars.com/api/?name=Indie+Match&background=fe2c55&color=fff"
-                                    alt="Avatar">
-                            </div>
-                            <div class="profile-names">
-                                <h2 class="display-name">Developer</h2>
-                                <p class="username-tag">@developer</p>
-                            </div>
-                            <div class="profile-stats">
-                                <div class="stat-box">
-                                    <span class="num">142</span>
-                                    <span class="label">Following</span>
-                                </div>
-                                <div class="stat-box">
-                                    <span class="num">8.2M</span>
-                                    <span class="label">Followers</span>
-                                </div>
-                                <div class="stat-box">
-                                    <span class="num">1.4B</span>
-                                    <span class="label">Likes</span>
-                                </div>
-                            </div>
-                            <div class="profile-bio">
-                                Building the future of indie games! 🛠️ <br>
-                                Play nicely.
-                            </div>
-                            <div class="profile-actions">
-                                <button class="btn-primary">Follow</button>
-                                <button class="btn-secondary">Message</button>
-                            </div>
+                        <div class="top-header">
+                            <span class="tab inactive" id="tab-following">Following</span>
+                            <span class="separator">|</span>
+                            <span class="tab active" id="tab-foryou">For You</span>
                         </div>
                     </div>
 
-                    <div class="profile-tabs">
-                        <div class="tab active" data-tab="likes">Likes</div>
-                        <div class="tab" data-tab="reposts">Reposts</div>
+                    <!-- Feed Container -->
+                    <div id="feed-container">
+                        <!-- Playables will be injected here by main.js -->
                     </div>
 
-                    <div class="video-grid">
-                        <!-- Grid items will be dynamically populated by JavaScript -->
+                    <!-- Interaction Layers -->
+                    <div id="edge-zone-left" class="edge-zone"></div>
+                    <div id="edge-zone-right" class="edge-zone"></div>
+
+                    <!-- Loading Overlay -->
+                    <div id="loading-overlay" class="hidden">
+                        <div class="spinner"></div>
+                    </div>
+
+                </div><!-- /screen-indie -->
+
+                <!-- ═══════════════════════════════════════ -->
+                <!--  SCREEN: Rewarded                       -->
+                <!-- ═══════════════════════════════════════ -->
+                <div id="screen-rewarded" class="screen">
+                    <div class="placeholder-screen">
+                        <div class="placeholder-icon">⭐</div>
+                        <h2 class="placeholder-title">Rewarded</h2>
+                        <p class="placeholder-sub">Kazandığın ödüller burada görünecek.</p>
+                        <div class="placeholder-badge">Yakında</div>
                     </div>
                 </div>
 
-                <div id="ui-overlay">
-                    <!-- Audio Toggle -->
-                    <div id="sound-control" class="sound-control">
-                        <span class="sound-icon">🔇</span>
-                    </div>
-
-                    <!-- Top Header -->
-                    <div class="top-header">
-                        <span class="tab inactive" id="tab-following">Following</span>
-                        <span class="separator">|</span>
-                        <span class="tab active" id="tab-foryou">For You</span>
-                    </div>
-
-                    <!-- Right Action Bar -->
-                    <div class="right-actions">
-                        <div class="action-item">
-                            <div class="icon-circle profile-pic"></div>
-                        </div>
-                        <div class="action-item" id="like-btn">
-                            <span class="icon heart-icon">♥</span>
-                            <span class="count">8.2M</span>
-                        </div>
-                        <div class="action-item">
-                            <span class="icon">💬</span>
-                            <span class="count">54K</span>
-                        </div>
-                        <div class="action-item" id="repost-btn">
-                            <span class="icon repost-icon">↻</span>
-                            <span class="count">21K</span>
-                        </div>
-                        <div class="action-item">
-                            <span class="icon">↗</span>
-                            <span class="count">Share</span>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Info -->
-                    <div class="bottom-info">
-                        <div class="username">@IndieMatch</div>
-                        <div class="description">Swipe right to play nicely! <span class="tag">#demo</span> <span
-                                class="tag">#gaming</span></div>
-                        <div class="music-note">♫ Original Sound - IndieMatch Demo</div>
+                <!-- ═══════════════════════════════════════ -->
+                <!--  SCREEN: Mesaj                          -->
+                <!-- ═══════════════════════════════════════ -->
+                <div id="screen-mesaj" class="screen">
+                    <div class="placeholder-screen">
+                        <div class="placeholder-icon">💬</div>
+                        <h2 class="placeholder-title">Mesajlar</h2>
+                        <p class="placeholder-sub">Mesajlarını burada görebilirsin.</p>
+                        <div class="placeholder-badge">Yakında</div>
                     </div>
                 </div>
 
+                <!-- ═══════════════════════════════════════ -->
+                <!--  SCREEN: Keşfet                         -->
+                <!-- ═══════════════════════════════════════ -->
+                <div id="screen-kesfet" class="screen">
+                    <div class="placeholder-screen">
+                        <div class="placeholder-icon">🧭</div>
+                        <h2 class="placeholder-title">Keşfet</h2>
+                        <p class="placeholder-sub">Yeni indie oyunları keşfet.</p>
+                        <div class="placeholder-badge">Yakında</div>
+                    </div>
+                </div>
 
+                <!-- ═══════════════════════════════════════ -->
+                <!--  SCREEN: Profil                         -->
+                <!-- ═══════════════════════════════════════ -->
+                <div id="screen-profil" class="screen">
+                    <div id="profile-view">
+                        <div class="profile-header">
+                            <div class="nav-bar">
+                                <span class="title">Profile</span>
+                                <span class="settings-icon">≡</span>
+                            </div>
+                            <div class="profile-info">
+                                <div class="profile-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Indie+Match&background=fe2c55&color=fff"
+                                        alt="Avatar">
+                                </div>
+                                <div class="profile-names">
+                                    <h2 class="display-name">Developer</h2>
+                                    <p class="username-tag">@developer</p>
+                                </div>
+                                <div class="profile-stats">
+                                    <div class="stat-box">
+                                        <span class="num">142</span>
+                                        <span class="label">Following</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="num">8.2M</span>
+                                        <span class="label">Followers</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="num">1.4B</span>
+                                        <span class="label">Likes</span>
+                                    </div>
+                                </div>
+                                <div class="profile-bio">
+                                    Building the future of indie games! 🛠️ <br>
+                                    Play nicely.
+                                </div>
+                                <div class="profile-actions">
+                                    <button class="btn-primary">Follow</button>
+                                    <button class="btn-secondary">Message</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-tabs">
+                            <div class="tab active" data-tab="likes">Likes</div>
+                            <div class="tab" data-tab="reposts">Reposts</div>
+                        </div>
+
+                        <div class="video-grid">
+                            <!-- Grid items will be dynamically populated by JavaScript -->
+                        </div>
+                    </div>
+                </div><!-- /screen-profil -->
 
                 <!-- Global Toast -->
                 <div id="toast" class="hidden"></div>
 
-                <!-- Loading Overlay -->
-                <div id="loading-overlay" class="hidden">
-                    <div class="spinner"></div>
-                </div>
+                <!-- ═══════════════════════════════════════ -->
+                <!--  BOTTOM TAB BAR                         -->
+                <!-- ═══════════════════════════════════════ -->
+                <nav id="bottom-tab-bar">
+                    <div class="tab-item active" data-screen="screen-indie" id="tab-indie">
+                        <div class="tab-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                            </svg>
+                        </div>
+                        <span class="tab-label">Indie</span>
+                    </div>
+                    <div class="tab-item" data-screen="screen-rewarded" id="tab-rewarded">
+                        <div class="tab-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                            </svg>
+                        </div>
+                        <span class="tab-label">Rewarded</span>
+                    </div>
+                    <div class="tab-item" data-screen="screen-mesaj" id="tab-mesaj">
+                        <div class="tab-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
+                            </svg>
+                        </div>
+                        <span class="tab-label">Mesaj</span>
+                    </div>
+                    <div class="tab-item" data-screen="screen-kesfet" id="tab-kesfet">
+                        <div class="tab-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                            </svg>
+                        </div>
+                        <span class="tab-label">Keşfet</span>
+                    </div>
+                    <div class="tab-item" data-screen="screen-profil" id="tab-profil">
+                        <div class="tab-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                            </svg>
+                        </div>
+                        <span class="tab-label">Profil</span>
+                    </div>
+                </nav>
 
-            </div>
-        </div>
-    </div>
+            </div><!-- /app -->
+        </div><!-- /phone-frame -->
+    </div><!-- /desktop-wrapper -->
+
     <script type="module" src="/src/main.js"></script>
 </body>
 
