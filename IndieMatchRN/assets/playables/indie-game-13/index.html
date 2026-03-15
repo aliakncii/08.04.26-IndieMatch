@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indie Game 13</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-wrapper">
+        <header>
+            <div class="header-left">
+                <h1 class="game-title">Pentastar<br>Test</h1>
+            </div>
+            <div class="header-right">
+                <div class="best-score">
+                    Best:<br><span id="best-percent">0%</span>
+                </div>
+                <button id="eraser-btn" class="tool-btn">Eraser</button>
+            </div>
+        </header>
+
+        <main id="game-container" class="notebook">
+            <div class="paper-lines"></div>
+            <canvas id="drawing-canvas"></canvas>
+            <!-- Target shape will be drawn behind/on overlay -->
+            <canvas id="target-canvas" class="hidden"></canvas>
+        </main>
+
+        <footer>
+            <div class="controls">
+                <div class="difficulty-box">
+                    <label>Difficulty:</label>
+                    <select id="difficulty-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                <button id="grade-btn" class="grade-btn">Grade Me!</button>
+            </div>
+        </footer>
+
+        <!-- Result Overlay -->
+        <div id="result-overlay" class="overlay hidden">
+            <div class="result-modal">
+                <div class="modal-header">My Pentastar Result</div>
+                <div class="percentage-circle">
+                    <span id="result-percent">0%</span>
+                </div>
+                <div id="result-comment" class="comment">Bro thinks he's aura...</div>
+            </div>
+            <div class="action-buttons">
+
+                <button id="retry-btn" class="action-btn retry">Play Again</button>
+                <button id="share-btn" class="action-btn share">Share Result</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

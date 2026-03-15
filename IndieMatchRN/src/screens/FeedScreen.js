@@ -25,13 +25,14 @@ import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FeedItem, { TAB_BAR_HEIGHT, ITEM_HEIGHT } from '../components/FeedItem';
 import ProfileScreen from './ProfileScreen';
+import HomeFeedScreen from './HomeFeedScreen';
 import { playables } from '../data/playables';
 import { loadLikes, saveLikes, loadReposts, saveReposts, loadSaved, saveSaved } from '../storage';
 import { getPlayableUri } from '../utils/assetHelper';
 
 const ONBOARDING_KEY = 'onboarding_swipe_seen';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const {} = Dimensions.get('window');
 
 // How far to the side of center each WebView window extends
 const WINDOW_SIZE = 1; // prev + current + next = 3 mounted
@@ -73,15 +74,6 @@ function BottomTabBar({ activeTab, onPress }) {
                     <View style={tabStyles.redDot} />
                 </View>
             </TouchableOpacity>
-        </View>
-    );
-}
-
-// ── Home screen ("Coming Soon") ───────────────────────────────────────────────
-function HomeScreen() {
-    return (
-        <View style={placeholderStyles.container}>
-            <Text style={placeholderStyles.comingSoon}>Coming Soon</Text>
         </View>
     );
 }
@@ -292,20 +284,6 @@ export default function FeedScreen({ navigation }) {
         }
     }, []);
 
-    // ── Right-swipe PanResponder (left-edge → open Profile) ──────────────────
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: (evt, gestureState) => {
-                const { dx, dy, moveX } = gestureState;
-                return moveX < SCREEN_WIDTH * 0.25 && dx > 20 && Math.abs(dy) < 40;
-            },
-            onPanResponderRelease: (evt, gestureState) => {
-                if (gestureState.dx > 60) {
-                    navigation.navigate('Profile', { currentIndex: currentIndexRef.current });
-                }
-            },
-        })
-    ).current;
 
     // ── Render each feed item ─────────────────────────────────────────────────
     const getItemLayout = useCallback(
@@ -350,7 +328,7 @@ export default function FeedScreen({ navigation }) {
     );
 
     return (
-        <View style={styles.container} {...panResponder.panHandlers}>
+        <View style={styles.container}>
             {/* ── Feed or placeholder screen ─────────────────────────────── */}
             {activeTab === 'indie' ? (
                 <FlatList
@@ -374,7 +352,7 @@ export default function FeedScreen({ navigation }) {
                     style={{ height: ITEM_HEIGHT }}
                 />
             ) : activeTab === 'home' ? (
-                <View style={styles.placeholderWrapper}><HomeScreen /></View>
+                <HomeFeedScreen navigation={navigation} />
             ) : activeTab === 'mesaj' ? (
                 <View style={styles.placeholderWrapper}><MesajScreen /></View>
             ) : activeTab === 'profil' ? (
@@ -483,13 +461,8 @@ const placeholderStyles = StyleSheet.create({
         color: '#888',
         fontWeight: '600',
     },
-    comingSoon: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#fff',
-        textAlign: 'center',
-    },
 });
+
 
 const mesajStyles = StyleSheet.create({
     container: {

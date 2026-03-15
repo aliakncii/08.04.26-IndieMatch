@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indie Game 8 - Piano Memory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        
+        <!-- Top Sequence Display -->
+        <div id="sequence-display">
+            <!-- Boxes will be injected here by JS -->
+        </div>
+
+        <!-- Main Piano Body -->
+        <div id="piano-body">
+            <div id="piano-brand">S T E I N W A Y &nbsp;&nbsp;&&nbsp;&nbsp; S O N S</div>
+            
+            <div id="keys-container">
+                <!-- White Keys (Purple) -->
+                <div class="key white-key" data-note="1"><span>1</span></div>
+                <div class="key white-key" data-note="3"><span>3</span></div>
+                <div class="key white-key" data-note="5"><span>5</span></div>
+                <div class="key white-key" data-note="6"><span>6</span></div>
+                <div class="key white-key" data-note="8"><span>8</span></div>
+                <div class="key white-key" data-note="10"><span>10</span></div>
+                <div class="key white-key" data-note="12"><span>12</span></div>
+                <div class="key white-key" data-note="13"><span>13</span></div>
+                <div class="key white-key" data-note="15"><span>15</span></div>
+                <div class="key white-key" data-note="17"><span>17</span></div>
+
+                <!-- Black Keys (Overlay) -->
+                <div class="black-keys-overlay">
+                    <div class="key black-key" data-note="2" style="left: 6%;"><span>2</span></div>
+                    <div class="key black-key" data-note="4" style="left: 16%;"><span>4</span></div>
+                    <!-- Gap for E/F (5->6) -->
+                    <div class="key black-key" data-note="7" style="left: 36%;"><span>7</span></div>
+                    <div class="key black-key" data-note="9" style="left: 46%;"><span>9</span></div>
+                    <div class="key black-key" data-note="11" style="left: 56%;"><span>11</span></div>
+                    <!-- Gap for B/C (12->13) -->
+                    <div class="key black-key" data-note="14" style="left: 76%;"><span>14</span></div>
+                    <div class="key black-key" data-note="16" style="left: 86%;"><span>16</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions & Play Button -->
+        <div id="controls-area">
+            <p id="instruction-text">TAP THE GOLDEN KEYS IN ORDER</p>
+            <button id="btn-play">▶</button>
+        </div>
+
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

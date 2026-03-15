@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indie Game 9 - Sniper Shootout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        
+        <!-- UI Layer matching the reference image red/green style -->
+        <div id="ui-top">
+            <div id="ui-title">SNIPER BASIC</div>
+            <div id="ui-stats">
+                <div class="stat-row">
+                    <span class="green-text">⚫ Basic Scope</span>
+                </div>
+                <div class="stat-row">
+                    ⏱ <span id="time-val" class="green-text">10s</span>
+                </div>
+                <div class="stat-row">
+                    <span class="green-text">SCORE: <span id="score-val">0</span></span>
+                </div>
+                <div class="stat-row">
+                    <span class="red-text">MISSES: <span id="miss-val">0</span>/3</span>
+                </div>
+                <div class="stat-row">
+                    LEVEL: <span id="level-val" class="yellow-text">1</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ui-subtitle">Living Room • Hits: <span id="hits-val">0</span>/5</div>
+
+        <!-- The Canvas where the room, targets, and scope will be drawn -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Start/Game Over Overlay -->
+        <div id="overlay" class="panel">
+            <h1 id="overlay-title">SNIPER TRAINING</h1>
+            <p id="overlay-desc">Eliminate targets before they escape.<br>3 Misses = Game Over.</p>
+            <button id="btn-start">START MISSION</button>
+        </div>
+
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

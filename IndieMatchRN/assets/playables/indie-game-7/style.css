@@ -1,0 +1,150 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Fredoka', sans-serif;
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* 9:16 Game Container */
+#game-container {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    height: 100%;
+    max-height: 100vh;
+    width: auto;
+    max-width: 100vw;
+    background-color: #ffb6c1; /* Soft pink background like the reference */
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+@media screen and (max-aspect-ratio: 9/16) {
+    #game-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 9 / 16;
+    }
+}
+
+/* Canvas handles rendering the hair and background mirror */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Toolbar UI */
+.toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background-color: #e83a9e; /* Bright pink hotbar */
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    z-index: 10;
+    padding: 0 10px;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+}
+
+.tool-btn {
+    width: 65px;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tool-btn.active {
+    background-color: #ff3a20; /* Bright red-orange active state like snip in reference */
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.tool-btn.active .icon, .tool-btn.active .label {
+    color: white;
+}
+
+.tool-btn .icon {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.tool-btn .label {
+    font-size: 12px;
+    color: #ffd1eb;
+    font-weight: 700;
+}
+
+.tool-btn.active .label {
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Color Palette */
+#color-palette {
+    position: absolute;
+    bottom: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#color-palette.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 20px);
+}
+
+.color-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #eee;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.color-btn:active {
+    transform: scale(0.9);
+}
+
+.color-btn.selected {
+    border-color: #333;
+    transform: scale(1.1);
+}
+\n\n/* IndieMatch Lock */\nhtml, body {\n    overflow: hidden !important;\n    overscroll-behavior: none !important;\n    touch-action: none !important;\n}\n

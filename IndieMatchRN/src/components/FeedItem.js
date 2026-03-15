@@ -9,7 +9,7 @@
 import React, { useRef, useState } from 'react';
 import {
     View, Text, TouchableOpacity, StyleSheet, Dimensions,
-    Animated, Image, Modal, ScrollView, TextInput,
+    Image, Modal, ScrollView, TextInput,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,32 +25,6 @@ export const ITEM_HEIGHT = SCREEN_HEIGHT - TAB_BAR_HEIGHT;
 const ENGAGEMENT_BAR_HEIGHT = 52;
 const CREATOR_BAR_HEIGHT = 52;
 
-// Heart animation shown on double-tap
-function FloatingHeart({ x, y, onDone }) {
-    const anim = useRef(new Animated.Value(0)).current;
-
-    React.useEffect(() => {
-        Animated.sequence([
-            Animated.timing(anim, { toValue: 1, duration: 300, useNativeDriver: true }),
-            Animated.timing(anim, { toValue: 0, duration: 500, useNativeDriver: true }),
-        ]).start(onDone);
-    }, []);
-
-    const scale = anim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 1.2, 0.8] });
-    const translateY = anim.interpolate({ inputRange: [0, 1], outputRange: [0, -80] });
-    const opacity = anim.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 1, 1, 0] });
-
-    return (
-        <Animated.Text
-            style={[
-                styles.floatingHeart,
-                { left: x - 40, top: y - 40, opacity, transform: [{ scale }, { translateY }] },
-            ]}
-        >
-            ♥
-        </Animated.Text>
-    );
-}
 
 export default function FeedItem({
     item,
@@ -71,33 +45,16 @@ export default function FeedItem({
     onNavigateProfile,
 }) {
     const { top: topInset } = useSafeAreaInsets();
-    const [hearts, setHearts] = useState([]);
-    const lastTapRef = useRef(0);
     const [showComments, setShowComments] = useState(false);
     const [showShare, setShowShare] = useState(false);
 
     const username = `@${(item.creator || item.publisher || 'indie').replace(/\s+/g, '').toLowerCase()}`;
     const title = item.title || item.gameName || 'Indie Game';
 
-    function handleDoubleTap(e) {
-        const now = Date.now();
-        if (now - lastTapRef.current < 300) {
-            const { locationX, locationY } = e.nativeEvent;
-            const id = now;
-            setHearts((prev) => [...prev, { x: locationX, y: locationY, id }]);
-            onLike && onLike();
-        }
-        lastTapRef.current = now;
-    }
-
-    function removeHeart(id) {
-        setHearts((prev) => prev.filter((h) => h.id !== id));
-    }
-
     return (
         <View style={styles.container}>
             {/* ── Game area (WebView) ────────────────────────────────────── */}
-            <View style={[styles.gameArea, { marginTop: topInset }]} onTouchEnd={handleDoubleTap}>
+            <View style={[styles.gameArea, { marginTop: topInset }]}>
                 {isMounted && uri ? (
                     <PlayableCard
                         ref={webViewRef}
@@ -108,9 +65,6 @@ export default function FeedItem({
                 ) : (
                     <View style={styles.placeholder} />
                 )}
-                {hearts.map((h) => (
-                    <FloatingHeart key={h.id} x={h.x} y={h.y} onDone={() => removeHeart(h.id)} />
-                ))}
                 <Toast message={toastMsg} visible={toastVisible} />
             </View>
 
@@ -316,16 +270,6 @@ const styles = StyleSheet.create({
     placeholder: {
         flex: 1,
         backgroundColor: '#111',
-    },
-    floatingHeart: {
-        position: 'absolute',
-        fontSize: 60,
-        color: '#fe2c55',
-        textShadowColor: 'rgba(0,0,0,0.3)',
-        textShadowOffset: { width: 0, height: 2 },
-        textShadowRadius: 4,
-        zIndex: 50,
-        pointerEvents: 'none',
     },
 
     // ── Engagement bar ────────────────────────────────────────────────────

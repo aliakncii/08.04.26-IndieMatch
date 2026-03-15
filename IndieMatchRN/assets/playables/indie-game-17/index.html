@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruit Ninja Clone - IndieMatch</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <div id="hud">
+            <div id="score-container">
+                <span class="label">SCORE</span>
+                <span id="score">0</span>
+            </div>
+            <div id="lives-container">
+                <div class="life" id="life-1">X</div>
+                <div class="life" id="life-2">X</div>
+                <div class="life" id="life-3">X</div>
+            </div>
+        </div>
+
+        <div id="start-overlay" class="overlay">
+            <h1>FRUIT NINJA</h1>
+            <p>Slice the fruits, avoid the bombs!</p>
+            <button id="start-btn">SLICE TO START</button>
+
+        </div>
+
+        <div id="game-over-overlay" class="overlay hidden">
+            <h1>GAME OVER</h1>
+            <div class="final-score">SCORE: <span id="final-score-val">0</span></div>
+            <button id="restart-btn">TRY AGAIN</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

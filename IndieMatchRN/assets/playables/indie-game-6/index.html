@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cat Wars: Whisker Chase</title>
+    <!-- Use Google Fonts for UI text -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Canvas for rendering Cat and Mice -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- UI Overlay Layer -->
+        <div id="ui-layer">
+            <div id="score-ui" class="badge">
+                <span class="badge-label">SCORE</span>
+                <span id="score-val" class="badge-val">0</span>
+            </div>
+            
+            <div id="time-ui" class="badge">
+                <span class="badge-label">TIME</span>
+                <span id="time-val" class="badge-val text-red">30</span>
+            </div>
+            
+            <!-- Start / Game Over Overlay -->
+            <div id="center-overlay" class="overlay flex-center">
+                <h1 id="overlay-title">GO!</h1>
+                <p id="overlay-subtitle">Get Ready!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -25,6 +25,23 @@ import { MSG, BRIDGE_INJECTION, parseWebViewMessage } from '../utils/messageBrid
  */
 const PRE_CONTENT_SHIM = `
 (function() {
+  // ── 0) Track ALL AudioContext instances created by the game ──
+  // Intercept the constructor before any game code runs so we can
+  // suspend/resume every context on pause/resume messages.
+  (function() {
+    var _OrigAC = window.AudioContext || window.webkitAudioContext;
+    if (!_OrigAC) return;
+    window.__trackedAudioContexts = [];
+    function PatchedAC(opts) {
+      var ctx = opts ? new _OrigAC(opts) : new _OrigAC();
+      window.__trackedAudioContexts.push(ctx);
+      return ctx;
+    }
+    PatchedAC.prototype = _OrigAC.prototype;
+    window.AudioContext = PatchedAC;
+    window.webkitAudioContext = PatchedAC;
+  })();
+
   // ── 1) Block network_rewriting.js ──
   // Sets the guard flag that stBootstrapNetworkRewriting() checks
   window.stBootstrapped_networkRewriting = true;
@@ -125,9 +142,31 @@ const PRE_CONTENT_SHIM = `
       }
       if (data.type === 'pause') {
         window.dispatchEvent(new Event('luna:unsafe:pause'));
+        // Hard-stop ALL audio: suspend every tracked AudioContext
+        if (window.__trackedAudioContexts) {
+          window.__trackedAudioContexts.forEach(function(ctx) {
+            try { if (ctx.state !== 'closed') ctx.suspend(); } catch(e) {}
+          });
+        }
+        // Pause every <audio> and <video> element and reset playback position
+        try {
+          document.querySelectorAll('audio, video').forEach(function(el) {
+            try { el.pause(); el.currentTime = 0; } catch(e) {}
+          });
+        } catch(e) {}
+        // Also mute so any audio that slips through is silent
+        if (window.mraid && window.mraid._fire) {
+          window.mraid._fire('audioVolumeChange', 0);
+        }
       }
       if (data.type === 'resume') {
         window.dispatchEvent(new Event('luna:unsafe:resume'));
+        // Resume all tracked AudioContexts
+        if (window.__trackedAudioContexts) {
+          window.__trackedAudioContexts.forEach(function(ctx) {
+            try { if (ctx.state === 'suspended') ctx.resume(); } catch(e) {}
+          });
+        }
       }
     } catch(err) {}
   });
@@ -152,7 +191,9 @@ const PlayableCard = forwardRef(function PlayableCard(
     if (isActive) {
       webRef.current.injectJavaScript(MSG.RESUME());
     } else {
+      // Pause then immediately force-mute to guarantee silence
       webRef.current.injectJavaScript(MSG.PAUSE());
+      webRef.current.injectJavaScript(MSG.MUTE(true));
     }
   }, [isActive]);
 

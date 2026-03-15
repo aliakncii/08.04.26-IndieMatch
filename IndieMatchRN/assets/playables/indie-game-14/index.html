@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Indie Game 14</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-wrapper">
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen">
+            <h1 class="game-title">WELCOME TO POLICE CHASE</h1>
+            <div class="difficulty-selection">
+                <p>CHOOSE DIFFICULTY</p>
+                <div class="difficulty-buttons">
+                    <button class="diff-btn" data-diff="easy">EASY</button>
+                    <button class="diff-btn active" data-diff="medium">MEDIUM</button>
+                    <button class="diff-btn" data-diff="hard">HARD</button>
+                </div>
+            </div>
+            <button id="start-btn" class="main-btn primary">START GAME</button>
+            <button id="tutorial-btn" class="main-btn secondary">TUTORIAL</button>
+        </div>
+
+        <!-- Game HUD -->
+        <div id="game-hud" class="hidden">
+            <div class="hud-top">
+                <div class="score-container">SCORE: <span id="score">0</span></div>
+                <div class="mode-indicator" id="mode-text">MEDIUM MODE</div>
+            </div>
+        </div>
+
+        <!-- Road Layout -->
+        <main id="game-container">
+            <div id="road">
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+                <div class="lane-line"></div>
+            </div>
+            <div id="player-car" class="car yellow"></div>
+        </main>
+
+        <!-- Tutorial Popup -->
+        <div id="tutorial-popup" class="overlay hidden">
+            <div class="popup-content">
+                <h2>HOW TO PLAY</h2>
+                <p>Drag your finger to move the car.<br>Avoid all other cars to stay out of jail!</p>
+                <button id="close-tutorial" class="popup-btn">GOT IT!</button>
+            </div>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over" class="overlay hidden">
+            <div class="popup-content">
+                <h1>FAILED!</h1>
+                <p>FINAL SCORE: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="main-btn primary">TRY AGAIN</button>
+                <button id="menu-btn" class="main-btn secondary">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+:root {
+    --bg-dark: #1a1a1a;
+    --wood-texture: #5c4033;
+    --wood-light: #8b5a2b;
+    --accent: #ffcc00;
+    --red: #ef4444;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background: var(--bg-dark);
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: var(--white);
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    max-width: 450px;
+    max-height: 800px;
+    aspect-ratio: 9/16;
+    position: relative;
+    /* Rich Wooden Board Effect */
+    background: 
+        repeating-linear-gradient(90deg, #4b3621 0, #4b3621 100px, #3d2b1f 100px, #3d2b1f 102px),
+        linear-gradient(rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.5) 100%),
+        #5c4033;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.5);
+    overflow: hidden;
+    border: 8px solid #2d1b0d;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#hud {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#score-container {
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#score {
+    font-size: 44px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+
+#lives-container {
+    display: flex;
+    gap: 8px;
+}
+
+.life {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--red);
+    text-shadow: 2px 2px 0px #000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.life.lost {
+    opacity: 0.2;
+    transform: scale(0.5) rotate(45deg);
+    filter: grayscale(1);
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+h1 {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 10px;
+    letter-spacing: -2px;
+    text-shadow: 0 4px 0 #8b5a2b;
+}
+
+p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+button {
+    background: linear-gradient(135deg, var(--accent) 0%, #ff9500 100%);
+    color: #1a0f08;
+    border: none;
+    padding: 18px 50px;
+    font-size: 20px;
+    font-weight: 900;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #8b5a2b;
+    transition: all 0.1s;
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #8b5a2b;
+}
+
+.final-score {
+    font-size: 28px;
+    margin-bottom: 30px;
+    font-weight: 900;
+    color: #fff;
+}
+
+\n\n/* IndieMatch Lock */\nhtml, body {\n    overflow: hidden !important;\n    overscroll-behavior: none !important;\n    touch-action: none !important;\n}\n

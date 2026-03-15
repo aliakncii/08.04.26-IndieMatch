@@ -1,0 +1,149 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#game-container {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    height: 100%;
+    max-height: 100vh;
+    width: auto;
+    max-width: 100vw;
+    background-color: #f1ede5; /* Nice soft beige/cream from reference */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@media screen and (max-aspect-ratio: 9/16) {
+    #game-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 9 / 16;
+    }
+}
+
+/* Canvas */
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Below UI */
+    /* No pointer event block so we can drag */
+}
+
+/* UI Elements */
+.top-bar {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    background-color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    color: #444;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+#phase-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #a39c91;
+    letter-spacing: 2px;
+}
+
+.bottom-bar {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+#btn-fire {
+    background-color: #d19f6a;
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+#btn-fire.disabled {
+    background-color: #cccccc !important;
+    color: #888;
+    pointer-events: none;
+}
+
+#btn-fire:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tooltip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #79685e;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    pointer-events: none;
+    z-index: 15;
+    transition: opacity 0.3s;
+}
+
+.tooltip.hidden {
+    opacity: 0;
+}
+\n\n/* IndieMatch Lock */\nhtml, body {\n    overflow: hidden !important;\n    overscroll-behavior: none !important;\n    touch-action: none !important;\n}\n

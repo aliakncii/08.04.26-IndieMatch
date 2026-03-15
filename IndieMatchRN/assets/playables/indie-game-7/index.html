@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gizmo Salon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Canvas for Hair Physics -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- UI Tools Bottom Bar -->
+        <div id="toolbar" class="toolbar">
+            <button class="tool-btn active" data-tool="snip">
+                <span class="icon">✂️</span>
+                <span class="label">SNIP</span>
+            </button>
+            <button class="tool-btn" data-tool="grow">
+                <span class="icon">🧴</span>
+                <span class="label">GROW</span>
+            </button>
+            <button class="tool-btn" data-tool="color">
+                <span class="icon">🎨</span>
+                <span class="label">COLOR</span>
+            </button>
+            <button class="tool-btn" id="btn-next">
+                <span class="icon">⏭️</span>
+                <span class="label">NEXT</span>
+            </button>
+        </div>
+
+        <!-- Color Palette (Hidden by default, shown when Color tool active) -->
+        <div id="color-palette" class="hidden">
+            <button class="color-btn" style="background: #e74c3c" data-color="#e74c3c"></button>
+            <button class="color-btn" style="background: #9b59b6" data-color="#9b59b6"></button>
+            <button class="color-btn" style="background: #3498db" data-color="#3498db"></button>
+            <button class="color-btn" style="background: #f1c40f" data-color="#f1c40f"></button>
+            <button class="color-btn" style="background: #2ecc71" data-color="#2ecc71"></button>
+            <button class="color-btn" style="background: #6e4c29" data-color="#6e4c29"></button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

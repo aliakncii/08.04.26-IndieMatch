@@ -1,0 +1,229 @@
+/* Rest & Basic Setup */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Press Start 2P for ultimate retro feel, fallback to monospace */
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#game-container {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    height: 100%;
+    max-height: 100vh;
+    width: auto;
+    max-width: 100vw;
+    background-color: #f7d9e3; /* Light pastel pink from reference */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+}
+
+@media screen and (max-aspect-ratio: 9/16) {
+    #game-container {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 9 / 16;
+    }
+}
+
+/* CRT Scanlines Overlay */
+.crt-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.05) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through! */
+}
+
+/* Header Text */
+header {
+    text-align: center;
+    margin-bottom: 50px;
+    z-index: 5;
+}
+
+h1 {
+    font-size: 26px;
+    color: #ff4a68;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0 #000;
+    letter-spacing: 2px;
+}
+
+header p {
+    font-size: 10px;
+    color: #6a3446;
+    letter-spacing: 1px;
+}
+
+/* Photo Section */
+.photo-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 90%;
+    margin-bottom: 30px;
+    z-index: 5;
+    position: relative;
+}
+
+.photo-box {
+    width: 42%;
+    aspect-ratio: 1 / 1; /* Square boxes */
+    background-color: #f4ecee; /* slightly off white */
+    border: 4px solid #111; /* Thick retro border */
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    /* Box shadow to simulate retro 3d button/box drop */
+    box-shadow: 3px 3px 0 #111;
+    transition: transform 0.1s;
+    
+    /* Display properties for uploaded image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.photo-box:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #111;
+}
+
+/* Hidden inputs are placed exactly over the boxes */
+.hidden-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2; /* Needs to be clickable */
+}
+
+/* Internal UI (+ P1) */
+.upload-ui {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #8892a0;
+    pointer-events: none; /* Let clicks pass to input */
+    z-index: 1;
+}
+
+.plus-icon {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.label-text {
+    font-size: 10px;
+}
+
+/* Hide UI when image is loaded */
+.photo-box.has-image .upload-ui {
+    display: none;
+}
+
+.heart-divider {
+    font-size: 24px;
+    color: #ff8b9e;
+}
+
+/* Instruction Text */
+.instruction {
+    font-size: 10px;
+    color: #5c1825;
+    margin-bottom: 40px;
+    z-index: 5;
+}
+
+/* Actions */
+.action-section {
+    position: relative;
+    width: 85%;
+    height: 50px;
+    z-index: 5;
+}
+
+#btn-analyze {
+    width: 100%;
+    height: 100%;
+    background-color: #b1a9af;
+    color: #fff;
+    border: 4px solid #666;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0px 4px 0 #666;
+    /* Disable state */
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+#btn-analyze:not([disabled]) {
+    background-color: #ff577d;
+    border-color: #222;
+    box-shadow: 0px 4px 0 #222;
+    color: #fff;
+    opacity: 1;
+}
+
+#btn-analyze:not([disabled]):active {
+    transform: translateY(4px);
+    box-shadow: 0px 0px 0 #222;
+}
+
+/* Result Overlay that appears over the app/photos when analyzing */
+#result-overlay {
+    position: absolute;
+    top: -200px; /* Float above the button, between the pictures */
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background-color: #fff;
+    border: 4px solid #ff4a68;
+    padding: 15px;
+    border-radius: 10px; /* Optional slight round or keep blocky */
+    color: #ff4a68;
+    font-size: 24px;
+    box-shadow: 4px 4px 0 #000;
+    z-index: 20;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#result-overlay.show {
+    transform: translateX(-50%) scale(1);
+}
+
+.hidden {
+    display: none !important;
+}
+\n\n/* IndieMatch Lock */\nhtml, body {\n    overflow: hidden !important;\n    overscroll-behavior: none !important;\n    touch-action: none !important;\n}\n
