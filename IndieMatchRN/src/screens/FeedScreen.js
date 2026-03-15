@@ -37,8 +37,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const WINDOW_SIZE = 1; // prev + current + next = 3 mounted
 
 const SIMPLE_PLACEHOLDERS = {
-    kesfet: { icon: '📍', title: 'Keşfet',  sub: 'Yeni indie oyunları keşfet.' },
-    profil: { icon: '👤', title: 'Profil',  sub: 'Profilini burada düzenleyebilirsin.' },
+    kesfet: { icon: '📍', title: 'Keşfet', sub: 'Yeni indie oyunları keşfet.' },
+    profil: { icon: '👤', title: 'Profil', sub: 'Profilini burada düzenleyebilirsin.' },
 };
 
 // ── Bottom tab bar component ──────────────────────────────────────────────────
@@ -173,7 +173,7 @@ function OnboardingOverlay({ onDismiss }) {
 // ── Main FeedScreen ───────────────────────────────────────────────────────────
 export default function FeedScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('indie');
-    const [showOnboarding, setShowOnboarding] = useState(true);
+    const [showOnboarding, setShowOnboarding] = useState(false); // false until AsyncStorage resolves
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isMuted, setIsMuted] = useState(true);
     const [likedSet, setLikedSet] = useState(new Set());
@@ -190,15 +190,25 @@ export default function FeedScreen({ navigation }) {
     // ── Load persisted data on mount ──────────────────────────────────────────
     useEffect(() => {
         (async () => {
-            const [likes, reposts, saved] = await Promise.all([loadLikes(), loadReposts(), loadSaved()]);
+            const [likes, reposts, saved, onboardingSeen] = await Promise.all([
+                loadLikes(),
+                loadReposts(),
+                loadSaved(),
+                AsyncStorage.getItem(ONBOARDING_KEY),
+            ]);
             setLikedSet(likes);
             setRepostedSet(reposts);
             setSavedSet(saved);
+            // Only show onboarding if never seen before
+            if (!onboardingSeen) {
+                setShowOnboarding(true);
+            }
         })();
     }, []);
 
     function handleOnboardingDismiss() {
         setShowOnboarding(false);
+        AsyncStorage.setItem(ONBOARDING_KEY, '1').catch(() => { });
     }
 
     // ── Navigate back from Profile → scroll to chosen item ───────────────────

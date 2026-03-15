@@ -409,11 +409,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#4CAF50',
     },
-    repostCount: {
-        fontSize: 11,
-        color: '#4CAF50',
-        fontWeight: '600',
-    },
+    // repostCount defined above in engagementBar section — do not redeclare here
     repostActive: {
         color: '#00e676',
     },

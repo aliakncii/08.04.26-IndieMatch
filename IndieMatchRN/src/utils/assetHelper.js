@@ -61,7 +61,7 @@ const ASSET_MANIFEST = [
 ];
 
 export const BASE_DIR = FileSystem.documentDirectory + 'playables/';
-const SENTINEL = BASE_DIR + '_ready_v7'; // v7: added p5-p9 (Arrows, Goods Sort, Jigsaw, Magic Sort, Pixel Flow)
+const SENTINEL = BASE_DIR + '_ready_v9'; // v8: fixed p6 window.pi.ready crash, p8 auto App Store redirect
 
 /**
  * Returns the Metro dev server base URL (e.g. "http://192.168.1.5:8081")
