@@ -13,6 +13,23 @@ import { StyleSheet, View, ActivityIndicator, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MSG, BRIDGE_INJECTION, parseWebViewMessage } from '../utils/messageBridge';
 
+function isBlockBlastPlayableUri(uri) {
+  // Block Blast is p1 (see src/data/playables.js localPath: 'p1/index.html').
+  // In dev it can be http(s)://<metro>/playables/p1/index.html
+  // In prod it can be file://.../playables/p1/index.html
+  // On web it can be /playables/p1/index.html
+  return typeof uri === 'string' && /(^|\/)p1\/index\.html(\?|#|$)/.test(uri);
+}
+
+function isStoreUrl(url) {
+  return (
+    typeof url === 'string' &&
+    (url.startsWith('https://apps.apple.com') ||
+      url.startsWith('itms-apps://') ||
+      url.startsWith('market://'))
+  );
+}
+
 /**
  * Injected BEFORE the HTML content loads.
  *
@@ -180,6 +197,7 @@ const PlayableCard = forwardRef(function PlayableCard(
 ) {
   const internalRef = useRef(null);
   const webRef = ref || internalRef;
+  const isBlockBlast = isBlockBlastPlayableUri(uri);
 
   useEffect(() => {
     if (!webRef.current) return;
@@ -202,9 +220,15 @@ const PlayableCard = forwardRef(function PlayableCard(
     if (parsed) {
       // Log debug messages from the WebView
       if (parsed.type === '__open_url' && parsed.url) {
-        Linking.openURL(parsed.url).catch(err =>
-          console.warn('[PlayableCard] Linking.openURL failed:', err)
-        );
+        // Block Blast: prevent intrusive mid-game store redirects.
+        // We prioritize "no redirect" over potentially broken end-of-flow gating.
+        if (isBlockBlast && isStoreUrl(parsed.url)) {
+          console.log('[PlayableCard] Blocked store redirect for Block Blast:', parsed.url);
+        } else {
+          Linking.openURL(parsed.url).catch(err =>
+            console.warn('[PlayableCard] Linking.openURL failed:', err)
+          );
+        }
       } else if (parsed.type === '__webview_error') {
         console.log('[PlayableCard] JS Error in WebView:', parsed.message, parsed.filename, 'L' + parsed.lineno);
       } else if (parsed.type === '__resource_error') {
@@ -228,11 +252,13 @@ const PlayableCard = forwardRef(function PlayableCard(
 
   // Catch direct WebView navigation to App Store / market URLs
   const handleShouldStartLoad = ({ url }) => {
-    if (
-      url.startsWith('https://apps.apple.com') ||
-      url.startsWith('itms-apps://') ||
-      url.startsWith('market://')
-    ) {
+    if (isStoreUrl(url)) {
+      // Block Blast: fully disable store redirection to avoid mid-game hijacks.
+      if (isBlockBlast) {
+        console.log('[PlayableCard] Blocked store navigation for Block Blast:', url);
+        return false;
+      }
+
       Linking.openURL(url).catch(err =>
         console.warn('[PlayableCard] Linking.openURL (nav) failed:', err)
       );
