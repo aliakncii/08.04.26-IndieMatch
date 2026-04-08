@@ -6,9 +6,9 @@
 //   [engagement bar — ♥ likes, 💬 comments, 🔖 save | ⊙ screenshot, ↗ share]
 //   [creator info bar — avatar + name/title | 🔁 repost]
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, Dimensions,
+    View, Text, TouchableOpacity, StyleSheet, Dimensions, Animated, Linking,
     Image, Modal, ScrollView, TextInput,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -24,6 +24,9 @@ export const ITEM_HEIGHT = SCREEN_HEIGHT - TAB_BAR_HEIGHT;
 
 const ENGAGEMENT_BAR_HEIGHT = 52;
 const CREATOR_BAR_HEIGHT = 52;
+
+const CTA_DELAY_MS = 8000;
+const CTA_ELIGIBLE_IDS = new Set(['p1', 'p2', 'p5', 'p7', 'p8', 'p9']);
 
 
 export default function FeedItem({
@@ -47,9 +50,121 @@ export default function FeedItem({
     const { top: topInset } = useSafeAreaInsets();
     const [showComments, setShowComments] = useState(false);
     const [showShare, setShowShare] = useState(false);
+    const [hasLoaded, setHasLoaded] = useState(false);
+    const [ctaVisible, setCtaVisible] = useState(false);
+
+    const ctaAnim = useRef(new Animated.Value(0)).current; // 0 hidden → 1 shown
+    const ctaBreatheAnim = useRef(new Animated.Value(1)).current; // scale breathing
+    const ctaTimerRef = useRef(null);
+    const ctaBreatheLoopRef = useRef(null);
+
+    const ctaEligible = useMemo(() => {
+        return Boolean(item?.id && CTA_ELIGIBLE_IDS.has(item.id) && item.storeUrl);
+    }, [item?.id, item?.storeUrl]);
 
     const username = `@${(item.creator || item.publisher || 'indie').replace(/\s+/g, '').toLowerCase()}`;
     const title = item.title || item.gameName || 'Indie Game';
+
+    useEffect(() => {
+        // Reset when item becomes inactive/unloaded to avoid cross-item leakage.
+        if (!isActive) {
+            if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current);
+            ctaTimerRef.current = null;
+            setCtaVisible(false);
+            ctaAnim.setValue(0);
+            ctaBreatheLoopRef.current?.stop?.();
+            ctaBreatheLoopRef.current = null;
+            ctaBreatheAnim.setValue(1);
+        }
+    }, [isActive, ctaAnim]);
+
+    useEffect(() => {
+        // Subtle continuous breathing while CTA is visible.
+        if (!ctaVisible) {
+            ctaBreatheLoopRef.current?.stop?.();
+            ctaBreatheLoopRef.current = null;
+            ctaBreatheAnim.setValue(1);
+            return;
+        }
+        if (ctaBreatheLoopRef.current) return;
+
+        const loop = Animated.loop(
+            Animated.sequence([
+                Animated.timing(ctaBreatheAnim, {
+                    toValue: 1.04,
+                    duration: 1050,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(ctaBreatheAnim, {
+                    toValue: 1,
+                    duration: 1050,
+                    useNativeDriver: true,
+                }),
+            ])
+        );
+
+        ctaBreatheLoopRef.current = loop;
+        loop.start();
+
+        return () => {
+            loop.stop();
+            if (ctaBreatheLoopRef.current === loop) {
+                ctaBreatheLoopRef.current = null;
+            }
+            ctaBreatheAnim.setValue(1);
+        };
+    }, [ctaVisible, ctaBreatheAnim]);
+
+    useEffect(() => {
+        if (!ctaEligible) return;
+        if (!isActive) return;
+        if (!hasLoaded) return;
+        if (ctaVisible) return;
+        if (ctaTimerRef.current) return;
+
+        // Start exactly after "active + load finished".
+        ctaTimerRef.current = setTimeout(() => {
+            setCtaVisible(true);
+            Animated.timing(ctaAnim, {
+                toValue: 1,
+                duration: 380,
+                useNativeDriver: true,
+            }).start();
+        }, CTA_DELAY_MS);
+
+        return () => {
+            if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current);
+            ctaTimerRef.current = null;
+        };
+    }, [ctaEligible, isActive, hasLoaded, ctaVisible, ctaAnim]);
+
+    function handleCtaPress() {
+        if (!ctaEligible) return;
+        const url = item.storeUrl;
+        if (!url) return;
+        Linking.openURL(url).catch((err) =>
+            console.warn('[CTA] Linking.openURL failed:', err)
+        );
+    }
+
+    const ctaAnimatedStyle = {
+        opacity: ctaAnim,
+        transform: [
+            {
+                translateY: ctaAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [8, 0],
+                }),
+            },
+            {
+                scale: ctaAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.88, 1],
+                }),
+            },
+            { scale: ctaBreatheAnim },
+        ],
+    };
 
     return (
         <View style={styles.container}>
@@ -61,6 +176,8 @@ export default function FeedItem({
                         uri={uri}
                         isActive={isActive}
                         isMuted={isMuted}
+                        onLoadStart={() => setHasLoaded(false)}
+                        onLoadEnd={() => setHasLoaded(true)}
                     />
                 ) : (
                     <View style={styles.placeholder} />
@@ -110,6 +227,21 @@ export default function FeedItem({
                         <Feather name="send" size={22} color="#fff" />
                     </TouchableOpacity>
                 </View>
+
+                {/* CTA overlay in the engagement bar center gap (no layout shift) */}
+                {ctaEligible && isActive && hasLoaded && (
+                    <View pointerEvents="box-none" style={styles.ctaOverlayEng}>
+                        <Animated.View style={[styles.ctaWrap, ctaAnimatedStyle]}>
+                            <TouchableOpacity
+                                onPress={handleCtaPress}
+                                activeOpacity={0.85}
+                                style={styles.ctaBtn}
+                            >
+                                <Text style={styles.ctaText}>INSTALL</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </View>
+                )}
             </View>
 
             {/* ── Comments modal ─────────────────────────────────────────── */}
@@ -307,6 +439,39 @@ const styles = StyleSheet.create({
     },
     repostCount: {
         color: '#4ADE80',
+    },
+
+    // ── CTA (INSTALL) ─────────────────────────────────────────────────────
+    ctaOverlayEng: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 5,
+    },
+    ctaWrap: {
+        borderRadius: 18,
+    },
+    ctaBtn: {
+        minWidth: 140,
+        paddingHorizontal: 18,
+        paddingVertical: 9,
+        borderRadius: 18,
+        backgroundColor: 'rgba(0,0,0,0.62)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.28)',
+        shadowColor: '#000',
+        shadowOpacity: 0.45,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 6,
+        alignItems: 'center',
+    },
+    ctaText: {
+        color: '#fff',
+        fontSize: 13,
+        fontWeight: '800',
+        letterSpacing: 0.8,
+        textAlign: 'center',
     },
 
     // ── Creator info bar ──────────────────────────────────────────────────

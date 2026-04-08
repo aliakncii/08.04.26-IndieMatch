@@ -39,7 +39,8 @@ const ASSET_MANIFEST = [
 
     // ── p6: main + Goods_Sort_files/ ─────────────────────────────────────────
     { module: require('../../assets/playables/p6/index.html'), dest: 'p6/index.html' },
-    { module: require('../../assets/playables/p6/Goods_Sort_files/mraid.jsa'), dest: 'p6/Goods_Sort_files/mraid.js' },
+    // Keep .jsa extension in production copy to match index.html references.
+    { module: require('../../assets/playables/p6/Goods_Sort_files/mraid.jsa'), dest: 'p6/Goods_Sort_files/mraid.jsa' },
 
     // ── p7: main + Jigsaw_Puzzle_files/ ──────────────────────────────────────
     { module: require('../../assets/playables/p7/index.html'), dest: 'p7/index.html' },
@@ -49,9 +50,10 @@ const ASSET_MANIFEST = [
 
     // ── p8: main + Magic_Sort_files/ ─────────────────────────────────────────
     { module: require('../../assets/playables/p8/index.html'), dest: 'p8/index.html' },
-    { module: require('../../assets/playables/p8/Magic_Sort_files/mraid.jsa'), dest: 'p8/Magic_Sort_files/mraid.js' },
-    { module: require('../../assets/playables/p8/Magic_Sort_files/network_rewriting.jsa'), dest: 'p8/Magic_Sort_files/network_rewriting.js' },
-    { module: require('../../assets/playables/p8/Magic_Sort_files/16dc92c991abd2855d0e4024fb87dcb4fb788383_v1_js_load.jsa'), dest: 'p8/Magic_Sort_files/16dc92c991abd2855d0e4024fb87dcb4fb788383_v1_js_load.js' },
+    // Keep .jsa extension in production copy to match index.html references.
+    { module: require('../../assets/playables/p8/Magic_Sort_files/mraid.jsa'), dest: 'p8/Magic_Sort_files/mraid.jsa' },
+    { module: require('../../assets/playables/p8/Magic_Sort_files/network_rewriting.jsa'), dest: 'p8/Magic_Sort_files/network_rewriting.jsa' },
+    { module: require('../../assets/playables/p8/Magic_Sort_files/16dc92c991abd2855d0e4024fb87dcb4fb788383_v1_js_load.jsa'), dest: 'p8/Magic_Sort_files/16dc92c991abd2855d0e4024fb87dcb4fb788383_v1_js_load.jsa' },
 
     // ── p9: main + Pixel_Flow_files/ ─────────────────────────────────────────
     { module: require('../../assets/playables/p9/index.html'), dest: 'p9/index.html' },

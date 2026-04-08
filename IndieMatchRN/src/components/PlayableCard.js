@@ -13,12 +13,20 @@ import { StyleSheet, View, ActivityIndicator, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MSG, BRIDGE_INJECTION, parseWebViewMessage } from '../utils/messageBridge';
 
-function isBlockBlastPlayableUri(uri) {
-  // Block Blast is p1 (see src/data/playables.js localPath: 'p1/index.html').
-  // In dev it can be http(s)://<metro>/playables/p1/index.html
-  // In prod it can be file://.../playables/p1/index.html
-  // On web it can be /playables/p1/index.html
-  return typeof uri === 'string' && /(^|\/)p1\/index\.html(\?|#|$)/.test(uri);
+function isStoreRedirectBlockedPlayableUri(uri) {
+  // Playable-specific store redirect blocks (by localPath).
+  // - Block Blast: p1/index.html
+  // - Magic Sort:  p8/index.html
+  return (
+    typeof uri === 'string' &&
+    (/(^|\/)p1\/index\.html(\?|#|$)/.test(uri) ||
+      /(^|\/)p8\/index\.html(\?|#|$)/.test(uri))
+  );
+}
+
+function isGoodsSortPlayableUri(uri) {
+  // Goods Sort is p6 (see src/data/playables.js localPath: 'p6/index.html').
+  return typeof uri === 'string' && /(^|\/)p6\/index\.html(\?|#|$)/.test(uri);
 }
 
 function isStoreUrl(url) {
@@ -197,7 +205,8 @@ const PlayableCard = forwardRef(function PlayableCard(
 ) {
   const internalRef = useRef(null);
   const webRef = ref || internalRef;
-  const isBlockBlast = isBlockBlastPlayableUri(uri);
+  const blockStoreRedirects = isStoreRedirectBlockedPlayableUri(uri);
+  const isGoodsSort = isGoodsSortPlayableUri(uri);
 
   useEffect(() => {
     if (!webRef.current) return;
@@ -215,15 +224,64 @@ const PlayableCard = forwardRef(function PlayableCard(
     }
   }, [isActive]);
 
+  // Goods Sort (p6) hangs on its loading overlay when its internal "luna:started"
+  // event never fires in some WebView environments. We apply a playable-scoped
+  // safety-net that triggers the luna start chain and hides the overlay ONLY for p6.
+  useEffect(() => {
+    if (!isGoodsSort) return;
+    if (!webRef.current) return;
+    if (!isActive) return;
+
+    webRef.current.injectJavaScript(`
+(function() {
+  if (window.__indie_goodsSortBootFixInstalled) return;
+  window.__indie_goodsSortBootFixInstalled = true;
+
+  function hideLoadingOverlay() {
+    try {
+      var el = document.getElementById('_ld');
+      if (el) el.style.display = 'none';
+    } catch (e) {}
+  }
+
+  // If the game never signals started, force the minimal events that p6's index.html
+  // is waiting for (luna:build → luna:start → luna:started).
+  var started = false;
+  window.addEventListener('luna:started', function() { started = true; hideLoadingOverlay(); }, { once: false });
+
+  // Kick after a short delay so normal boot wins when it works.
+  setTimeout(function() {
+    try {
+      if (started) return;
+      window.dispatchEvent(new Event('luna:build'));
+      // p6 already has a 1s safety timer after luna:build to fire luna:start,
+      // but we fire it explicitly as well to avoid relying on that chain.
+      window.dispatchEvent(new Event('luna:start'));
+    } catch (e) {}
+  }, 1200);
+
+  // Hard fallback: after 6s, remove loading overlay anyway.
+  setTimeout(function() {
+    try {
+      if (started) return;
+      hideLoadingOverlay();
+      window.dispatchEvent(new Event('luna:started'));
+    } catch (e) {}
+  }, 6000);
+})();
+true;
+    `);
+  }, [isGoodsSort, isActive]);
+
   const handleMessage = (event) => {
     const parsed = parseWebViewMessage(event.nativeEvent.data);
     if (parsed) {
       // Log debug messages from the WebView
       if (parsed.type === '__open_url' && parsed.url) {
-        // Block Blast: prevent intrusive mid-game store redirects.
+        // Playable-specific: prevent intrusive mid-game store redirects.
         // We prioritize "no redirect" over potentially broken end-of-flow gating.
-        if (isBlockBlast && isStoreUrl(parsed.url)) {
-          console.log('[PlayableCard] Blocked store redirect for Block Blast:', parsed.url);
+        if (blockStoreRedirects && isStoreUrl(parsed.url)) {
+          console.log('[PlayableCard] Blocked store redirect for playable:', uri, parsed.url);
         } else {
           Linking.openURL(parsed.url).catch(err =>
             console.warn('[PlayableCard] Linking.openURL failed:', err)
@@ -253,9 +311,9 @@ const PlayableCard = forwardRef(function PlayableCard(
   // Catch direct WebView navigation to App Store / market URLs
   const handleShouldStartLoad = ({ url }) => {
     if (isStoreUrl(url)) {
-      // Block Blast: fully disable store redirection to avoid mid-game hijacks.
-      if (isBlockBlast) {
-        console.log('[PlayableCard] Blocked store navigation for Block Blast:', url);
+      // Playable-specific: fully disable store redirection to avoid mid-game hijacks.
+      if (blockStoreRedirects) {
+        console.log('[PlayableCard] Blocked store navigation for playable:', uri, url);
         return false;
       }
 
